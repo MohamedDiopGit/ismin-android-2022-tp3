@@ -8,11 +8,21 @@ import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 class MainActivity : AppCompatActivity() {
+
+    private val books = ArrayList<Book>()
+    private val bookAdapter = BookAdapter(books)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        val rcvBooks = findViewById<RecyclerView>(R.id.rcv_books)
+        rcvBooks.layoutManager = LinearLayoutManager(this)
+        rcvBooks.adapter = bookAdapter
     }
 
     fun createBook(view: View) {
@@ -22,9 +32,15 @@ class MainActivity : AppCompatActivity() {
     private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK) {
-            val someData = result.data?.getSerializableExtra("extra-key")
+            val someData = result.data?.getSerializableExtra(EXTRA_KEY)
             findViewById<TextView>(R.id.textView).text = someData.toString()
+            books.add(someData as Book)
+            // `refreshData` have to be implemented in your adapter class
+            bookAdapter.refreshData(books)
+            bookAdapter.notifyDataSetChanged()
+
         }
+
     }
 
 

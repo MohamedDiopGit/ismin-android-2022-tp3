@@ -1,3 +1,10 @@
 <resources>
-    <string name="app_name">Android App</string>
+    <string name="app_name">Android</string>
+    <string name="hint">hint</string>
+    <string name="hint2">hint</string>
+    <string name="hint3">hint</string>
+    <string name="save">Save</string>
+    <string name="Title">Title</string>
+    <string name="Date">Date</string>
+    <string name="Author">Author</string>
 </resources>
