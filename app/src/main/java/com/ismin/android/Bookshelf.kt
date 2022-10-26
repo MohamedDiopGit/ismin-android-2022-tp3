@@ -1,28 +1,37 @@
 package com.ismin.android
 
+import java.lang.RuntimeException
+
 class Bookshelf {
-    private val books: HashMap<String, Book> = HashMap()
-    fun addBook(book: Book){
-        books[book.title] = book
+
+    private val books: HashMap<String, Book> = HashMap();
+
+    fun addBook(book: Book) {
+        books[book.title] = book;
     }
 
-    fun getBook(title: String) : Book? {
-        return books[title] ?: throw RuntimeException("Book not found : $title")
+    fun getBook(title: String): Book {
+        return books[title] ?: throw RuntimeException("No book with title: $title");
     }
 
-    fun getTotalNumberOfBooks() : Int{
-        return books.size
-}
-
-    fun getAllBooks(): ArrayList<Book> {
-        return ArrayList(books.values.sortedBy { it.title })
-    }
-    fun getBooksOf(author: String) : List<Book>{
-        return books.filter{it.value.author == author}.values.sortedBy{it.title}.toList()
+    fun getAllBooks(): List<Book> {
+        return books.values.sortedBy { it.title };
     }
 
-
-    fun clear() {
-        books.clear()
+    fun getBooksOf(author: String): List<Book> {
+        return books.filterValues { it.author.equals(author, ignoreCase = true) }
+            .values
+            .sortedBy { it.title }
+            .toList();
     }
+
+    fun getTotalNumberOfBooks(): Int {
+        return books.size;
+    }
+
+    fun clean() {
+        books.clear();
+    }
+
+
 }

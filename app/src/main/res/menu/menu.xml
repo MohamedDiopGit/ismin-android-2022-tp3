@@ -2,8 +2,10 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/menu_delete"
-        android:icon="@drawable/ic_baseline_delete_24"
-        android:title="@string/clear_all_data"
+    <item
+        android:id="@+id/action_clean"
+        android:icon="@drawable/ic_baseline_delete_forever_24"
+        android:title="Clean books"
+        android:iconTint="#FFF"
         app:showAsAction="ifRoom" />
 </menu>

@@ -5,53 +5,55 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
+import android.widget.Button
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var rcvBooks: RecyclerView
 
-    private val books = ArrayList<Book>()
-    private val bookAdapter = BookAdapter(books)
-    private var bookshelf = Bookshelf()
+    private val bookshelf = Bookshelf()
+    private lateinit var bookAdapter: BookAdapter
+
+    private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val createdBook = result.data?.getSerializableExtra(CREATED_BOOK) as Book
+            bookshelf.addBook(createdBook)
+            bookAdapter.refreshData(bookshelf.getAllBooks())
+            bookAdapter.notifyDataSetChanged()
+        }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val rcvBooks = findViewById<RecyclerView>(R.id.rcv_books)
-        rcvBooks.layoutManager = LinearLayoutManager(this)
+        val book = Book("Le Petit Prince", "Antoine de Saint-Exupéry", "1943")
+        bookshelf.addBook(book)
+        val anotherBook = Book("American Gods", "Neil Gaiman", "2001")
+        bookshelf.addBook(anotherBook)
+
+        rcvBooks = findViewById(R.id.a_main_rcv_books);
+
+        bookAdapter = BookAdapter(bookshelf.getAllBooks())
         rcvBooks.adapter = bookAdapter
-    }
 
-    fun createBook(view: View) {
-        startActivity2()
-      }
+        val linearLayoutManager = LinearLayoutManager(this)
+        rcvBooks.layoutManager = linearLayoutManager
 
-    private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            result: ActivityResult ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val createdBook = result.data?.getSerializableExtra(EXTRA_KEY) as Book
-            // findViewById<TextView>(R.id.textView).text = someData.toString()
-            bookshelf.addBook(createdBook);
-            // `refreshData` have to be implemented in your adapter class
-            bookAdapter.refreshData(bookshelf.getAllBooks())
-            bookAdapter.notifyDataSetChanged()
+        val btnCreateBook = findViewById<FloatingActionButton>(R.id.a_main_btn_create_book);
 
+        btnCreateBook.setOnClickListener {
+            val intent = Intent(this, CreateBookActivity::class.java)
+            startForResult.launch(intent)
         }
-
     }
-
-
-    fun startActivity2() {
-        val intent = Intent(this, CreateBookActivity::class.java)
-        startForResult.launch(intent)
-    }
-
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         super.onCreateOptionsMenu(menu)
@@ -61,15 +63,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.menu_delete -> {
-                bookshelf.clear()
-                bookAdapter.refreshData(bookshelf.getAllBooks())
-                bookAdapter.notifyDataSetChanged();
+            R.id.action_clean -> {
+                val numberOfBooks = bookshelf.getTotalNumberOfBooks()
+                bookshelf.clean()
+                bookAdapter.refreshData(bookshelf.getAllBooks());
+                bookAdapter.notifyItemRangeRemoved(0, numberOfBooks)
                 true
             }
-
             else -> super.onOptionsItemSelected(item)
         }
     }
-
 }
