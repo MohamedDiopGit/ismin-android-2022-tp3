@@ -7,4 +7,5 @@
     <string name="Title">Title</string>
     <string name="Date">Date</string>
     <string name="Author">Author</string>
+    <string name="clear_all_data">Clear</string>
 </resources>

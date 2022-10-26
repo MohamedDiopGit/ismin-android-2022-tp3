@@ -14,11 +14,15 @@ class Bookshelf {
         return books.size
 }
 
-    fun getAllBooks(): List<Book>{
-        return books.values.sortedBy { it.title }
+    fun getAllBooks(): ArrayList<Book> {
+        return ArrayList(books.values.sortedBy { it.title })
     }
-
     fun getBooksOf(author: String) : List<Book>{
         return books.filter{it.value.author == author}.values.sortedBy{it.title}.toList()
+    }
+
+
+    fun clear() {
+        books.clear()
     }
 }

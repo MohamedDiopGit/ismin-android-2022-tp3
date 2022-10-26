@@ -3,6 +3,8 @@ package com.ismin.android
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
@@ -15,6 +17,7 @@ class MainActivity : AppCompatActivity() {
 
     private val books = ArrayList<Book>()
     private val bookAdapter = BookAdapter(books)
+    private var bookshelf = Bookshelf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,11 +35,11 @@ class MainActivity : AppCompatActivity() {
     private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK) {
-            val someData = result.data?.getSerializableExtra(EXTRA_KEY)
-            findViewById<TextView>(R.id.textView).text = someData.toString()
-            books.add(someData as Book)
+            val createdBook = result.data?.getSerializableExtra(EXTRA_KEY) as Book
+            // findViewById<TextView>(R.id.textView).text = someData.toString()
+            bookshelf.addBook(createdBook);
             // `refreshData` have to be implemented in your adapter class
-            bookAdapter.refreshData(books)
+            bookAdapter.refreshData(bookshelf.getAllBooks())
             bookAdapter.notifyDataSetChanged()
 
         }
@@ -50,6 +53,23 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        super.onCreateOptionsMenu(menu)
+        menuInflater.inflate(R.menu.menu, menu)
+        return true
+    }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_delete -> {
+                bookshelf.clear()
+                bookAdapter.refreshData(bookshelf.getAllBooks())
+                bookAdapter.notifyDataSetChanged();
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 
 }
